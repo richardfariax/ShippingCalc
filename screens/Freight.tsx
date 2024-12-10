@@ -10,70 +10,104 @@ import {
   View,
 } from "react-native";
 import MapView, { Marker } from "react-native-maps";
+import { updateFreight, deleteFreight } from "../model/freight";
 import AsyncStorage from "@react-native-async-storage/async-storage";
-import moment from "moment";
-import { addFreight } from "../model/tasks";
-import styles from "../style/CreateTask";
+import styles from "../style/CreateFreight";
 
-export default function CreateFreight() {
+export default function Freight({ route }) {
   const navigation = useNavigation();
-  const [origin, setOrigin] = useState(null);
-  const [destination, setDestination] = useState(null);
-  const [value, setValue] = useState("");
-  const [cargoType, setCargoType] = useState("");
-  const [openedDate, setOpenedDate] = useState("");
+  const { task } = route.params;
+
+  const [origin, setOrigin] = useState(task.origin || null);
+  const [destination, setDestination] = useState(task.destination || null);
+  const [value, setValue] = useState(task.value || "");
+  const [cargoType, setCargoType] = useState(task.cargoType || "");
+  const [openedDate, setOpenedDate] = useState(task.openedDate || "");
   const [createdBy, setCreatedBy] = useState("");
   const [isMapModalVisible, setIsMapModalVisible] = useState(false);
   const [currentSelection, setCurrentSelection] = useState(null);
 
   useEffect(() => {
-    const currentDate = moment().format("DD/MM/YYYY");
-    setOpenedDate(currentDate);
-
     const getUsername = async () => {
       try {
         const username = await AsyncStorage.getItem("username");
-        setCreatedBy(username);
+        setCreatedBy(username || "Desconhecido");
       } catch (error) {
-        console.error("Erro ao obter o nome de usuário:", error);
+        console.error("Erro ao buscar o nome de usuário:", error);
       }
     };
 
     getUsername();
   }, []);
 
+  const showAlert = (title, message) => {
+    Alert.alert(title, message);
+  };
+
   const handleSaveFreight = async () => {
     if (!origin || !destination || !value.trim() || !cargoType.trim()) {
-      showAlert("Atenção", "Por favor, preencha todos os campos.");
+      showAlert("Atenção", "Por favor, preencha todos os campos obrigatórios.");
       return;
     }
 
     try {
-      await addFreight(
+      const updatedFreight = {
+        id: task.id,
         origin,
         destination,
         value,
         cargoType,
         openedDate,
-        createdBy
-      );
-      navigation.goBack();
+        createdBy,
+      };
+
+      const rowsAffected = await updateFreight(updatedFreight);
+      if (rowsAffected > 0) {
+        console.log("Frete atualizado com sucesso");
+        navigation.goBack();
+      } else {
+        console.error("Não foi possível atualizar o frete.");
+      }
     } catch (error) {
       console.error("Erro ao salvar o frete:", error);
     }
   };
 
-  const showAlert = (title: string, message: string) => {
-    Alert.alert(title, message);
+  const handleDeleteFreight = async () => {
+    Alert.alert(
+      "Confirmação",
+      "Tem certeza de que deseja excluir este frete?",
+      [
+        { text: "Cancelar", style: "cancel" },
+        {
+          text: "Excluir",
+          style: "destructive",
+          onPress: async () => {
+            try {
+              await deleteFreight(task.id);
+              console.log("Frete excluído com sucesso.");
+              navigation.goBack();
+            } catch (error) {
+              console.error("Erro ao excluir o frete:", error);
+              showAlert("Erro", "Não foi possível excluir o frete.");
+            }
+          },
+        },
+      ]
+    );
   };
 
   const handleMapPress = (e) => {
+    if (!currentSelection) return;
+
     const { latitude, longitude } = e.nativeEvent.coordinate;
+
     if (currentSelection === "origin") {
       setOrigin({ latitude, longitude });
     } else if (currentSelection === "destination") {
       setDestination({ latitude, longitude });
     }
+
     setIsMapModalVisible(false);
   };
 
@@ -100,6 +134,7 @@ export default function CreateFreight() {
       contentContainerStyle={styles.container}
       keyboardShouldPersistTaps="handled"
     >
+      {/* Campo Origem */}
       <Text style={styles.title}>Origem:</Text>
       <TouchableOpacity onPress={() => openMapModal("origin")}>
         <MapView
@@ -123,6 +158,8 @@ export default function CreateFreight() {
           {origin && <Marker coordinate={origin} title="Origem" />}
         </MapView>
       </TouchableOpacity>
+
+      {/* Campo Destino */}
       <Text style={styles.title}>Destino:</Text>
       <TouchableOpacity onPress={() => openMapModal("destination")}>
         <MapView
@@ -146,6 +183,7 @@ export default function CreateFreight() {
           {destination && <Marker coordinate={destination} title="Destino" />}
         </MapView>
       </TouchableOpacity>
+
       <Text style={styles.title}>Valor do Frete:</Text>
       <TextInput
         style={styles.input}
@@ -154,6 +192,7 @@ export default function CreateFreight() {
         keyboardType="numeric"
         onChangeText={(text) => setValue(formatCurrencyOnInput(text))}
       />
+
       <Text style={styles.title}>Tipo da Carga:</Text>
       <TextInput
         style={styles.input}
@@ -162,26 +201,19 @@ export default function CreateFreight() {
         onChangeText={(text) => setCargoType(text)}
       />
 
-      <Text style={styles.title}>Data de Abertura:</Text>
-      <TextInput
-        style={styles.input}
-        placeholder="Data de Abertura (DD/MM/AAAA)"
-        value={openedDate}
-        editable={false}
-      />
-
-      <Text style={styles.title}>Aberto por:</Text>
-      <TextInput
-        style={styles.input}
-        placeholder="Aberto por"
-        value={createdBy}
-        editable={false}
-      />
-
       <TouchableOpacity style={styles.button} onPress={handleSaveFreight}>
         <Text style={styles.buttonText}>Salvar Frete</Text>
       </TouchableOpacity>
 
+      {/* Botão de Exclusão */}
+      <TouchableOpacity
+        style={[styles.button, { backgroundColor: "red" }]}
+        onPress={handleDeleteFreight}
+      >
+        <Text style={styles.buttonText}>Excluir Frete</Text>
+      </TouchableOpacity>
+
+      {/* Modal de Mapa */}
       <Modal visible={isMapModalVisible} animationType="slide">
         <MapView
           style={{ flex: 1 }}
@@ -194,8 +226,8 @@ export default function CreateFreight() {
               currentSelection === "origin"
                 ? origin?.longitude || -46.633308
                 : destination?.longitude || -46.633308,
-            latitudeDelta: 0.005,
-            longitudeDelta: 0.005,
+            latitudeDelta: 0.01,
+            longitudeDelta: 0.01,
           }}
           onPress={handleMapPress}
         >
@@ -206,7 +238,6 @@ export default function CreateFreight() {
             <Marker coordinate={destination} title="Destino" />
           )}
         </MapView>
-
         <TouchableOpacity
           style={[styles.button, { margin: 10 }]}
           onPress={() => setIsMapModalVisible(false)}

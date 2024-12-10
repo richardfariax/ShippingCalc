@@ -2,10 +2,10 @@ import React from "react";
 import { NavigationContainer } from "@react-navigation/native";
 import { createNativeStackNavigator } from "@react-navigation/native-stack";
 import Login from "./screens/Login";
-import Tasks from "./screens/Tasks";
-import Task from "./screens/Task";
+import Freights from "./screens/Freights";
+import Freight from "./screens/Freight";
 import Register from "./screens/Register";
-import CreateTask from "./screens/CreateTask";
+import CreateTask from "./screens/CreateFreight";
 import { setupDatabase } from "./model/database";
 
 const StackNavigation = createNativeStackNavigator();
@@ -21,11 +21,15 @@ export default function App() {
           component={Login}
         />
         <StackNavigation.Screen
-          options={{animation: 'slide_from_bottom', title: "Tarefas" }}
-          name="Tasks"
-          component={Tasks}
+          options={{ animation: "slide_from_bottom", title: "Tarefas" }}
+          name="Freights"
+          component={Freights}
         />
-        <StackNavigation.Screen name="Task" component={Task} options={{animation: 'slide_from_bottom',}} />
+        <StackNavigation.Screen
+          name="Freight"
+          component={Freight}
+          options={{ animation: "slide_from_bottom" }}
+        />
         <StackNavigation.Screen
           name="Register"
           component={Register}
@@ -34,10 +38,10 @@ export default function App() {
           }}
         />
         <StackNavigation.Screen
-          name="CreateTask"
+          name="CreateFreight"
           component={CreateTask}
           options={{
-            animation: 'slide_from_bottom',
+            animation: "slide_from_bottom",
             title: "",
           }}
         />

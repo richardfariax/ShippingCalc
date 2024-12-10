@@ -53,7 +53,7 @@ export default function Login() {
         } else {
           await AsyncStorage.removeItem("password");
         }
-        navigation.navigate("Tasks" as never);
+        navigation.navigate("Freights" as never);
       } else {
         setError("Usuário ou senha incorretos");
       }
