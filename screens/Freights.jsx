@@ -1,4 +1,4 @@
-import React, { useState, useEffect } from "react";
+import React, { useState } from "react";
 import { useNavigation, useFocusEffect } from "@react-navigation/native";
 import { View, Text, FlatList, TouchableOpacity, Alert } from "react-native";
 import AsyncStorage from "@react-native-async-storage/async-storage";
@@ -72,32 +72,24 @@ export default function Freights() {
           })
         }
       >
-        <Text style={styles.taskTitle}>{item.title}</Text>
+        <Text style={styles.taskTitle}>{item.cargoType}</Text>
         <Text style={styles.taskText}>Aberto em: {item.openedDate}</Text>
         <Text style={styles.taskText}>
-          Origem: {item.origin?.latitude}, {item.origin?.longitude}
+          Origem: {item.origin ? JSON.parse(item.origin)?.latitude : "N/A"}
         </Text>
         <Text style={styles.taskText}>
-          Destino: {item.destination?.latitude}, {item.destination?.longitude}
+          Destino:{" "}
+          {item.destination ? JSON.parse(item.destination)?.latitude : "N/A"}
         </Text>
-        <Text style={styles.taskText}>
-          Valor: {item.value ? `R$ ${item.value}` : "N/A"}
-        </Text>
-        <Text style={styles.taskText}>
-          Tipo de carga: {item.cargoType || "N/A"}
-        </Text>
+        <Text style={styles.taskText}>Valor: {item.value || "N/A"}</Text>
       </TouchableOpacity>
     );
   };
 
-  const sortedTasks = showCompleted
-    ? tasks.filter((task) => task.status === "Concluído")
-    : tasks.filter((task) => task.status !== "Concluído");
-
   return (
     <View style={styles.container}>
       <FlatList
-        data={sortedTasks}
+        data={tasks}
         renderItem={renderTaskItem}
         keyExtractor={(item) => item.id.toString()}
         contentContainerStyle={styles.taskList}

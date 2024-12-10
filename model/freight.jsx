@@ -15,6 +15,7 @@ const setupFreightsTable = () => {
     );
   });
 };
+
 const getAllFreights = (createdBy = null) => {
   return new Promise((resolve) => {
     db.transaction((tx) => {
@@ -53,9 +54,7 @@ const addFreight = (
           openedDate,
           createdBy,
         ],
-        (_, result) => {
-          resolve(result.insertId);
-        }
+        (_, result) => resolve(result.insertId)
       );
     });
   });
@@ -65,33 +64,27 @@ const updateFreight = (updatedFreight) => {
   return new Promise((resolve) => {
     db.transaction((tx) => {
       tx.executeSql(
-        "UPDATE freights SET origin = ?, destination = ?, value = ?, cargoType = ?, openedDate = ?, createdBy = ? WHERE id = ?",
+        "UPDATE freights SET value = ?, cargoType = ?, openedDate = ?, createdBy = ? WHERE id = ?",
         [
-          JSON.stringify(updatedFreight.origin),
-          JSON.stringify(updatedFreight.destination),
           updatedFreight.value,
           updatedFreight.cargoType,
           updatedFreight.openedDate,
           updatedFreight.createdBy,
           updatedFreight.id,
         ],
-        (_, result) => {
-          resolve(result.rowsAffected);
-        }
+        (_, result) => resolve(result.rowsAffected)
       );
     });
   });
 };
 
 const deleteFreight = (freightId) => {
-  return new Promise((resolve, reject) => {
+  return new Promise((resolve) => {
     db.transaction((tx) => {
       tx.executeSql(
         "DELETE FROM freights WHERE id = ?",
         [freightId],
-        (_, result) => {
-          resolve(result.rowsAffected);
-        }
+        (_, result) => resolve(result.rowsAffected)
       );
     });
   });
@@ -99,8 +92,8 @@ const deleteFreight = (freightId) => {
 
 export {
   setupFreightsTable,
-  addFreight,
   getAllFreights,
+  addFreight,
   updateFreight,
   deleteFreight,
 };

@@ -6,6 +6,8 @@ import {
   TouchableOpacity,
   ScrollView,
   Alert,
+  Modal,
+  View,
 } from "react-native";
 import { updateFreight, deleteFreight } from "../model/freight";
 import AsyncStorage from "@react-native-async-storage/async-storage";
@@ -47,7 +49,7 @@ export default function Freight({ route }) {
   };
 
   const handleSaveFreight = async () => {
-    if (!origin || !value.trim() || !cargoType.trim()) {
+    if (!value.trim() || !cargoType.trim()) {
       showAlert("Atenção", "Por favor, preencha todos os campos obrigatórios.");
       return;
     }
@@ -55,7 +57,6 @@ export default function Freight({ route }) {
     try {
       const updatedFreight = {
         id: freight?.id,
-        origin,
         value,
         cargoType,
         openedDate,
@@ -133,11 +134,9 @@ export default function Freight({ route }) {
         value={cargoType}
         onChangeText={(text) => setCargoType(text)}
       />
-
       <TouchableOpacity style={styles.button} onPress={handleSaveFreight}>
         <Text style={styles.buttonText}>Salvar Frete</Text>
       </TouchableOpacity>
-
       <TouchableOpacity
         style={[styles.button, { backgroundColor: "red" }]}
         onPress={handleDeleteFreight}
