@@ -149,13 +149,6 @@ export default function Freight({ route }) {
       </TouchableOpacity>
 
       <TouchableOpacity
-        style={[styles.button, { backgroundColor: "red" }]}
-        onPress={handleDeleteFreight}
-      >
-        <Text style={styles.buttonText}>Excluir Frete</Text>
-      </TouchableOpacity>
-
-      <TouchableOpacity
         style={[
           styles.button,
           { backgroundColor: status === "Aberto" ? "green" : "orange" },
@@ -165,6 +158,13 @@ export default function Freight({ route }) {
         <Text style={styles.buttonText}>
           {status === "Aberto" ? "Concluir Frete" : "Reabrir Frete"}
         </Text>
+      </TouchableOpacity>
+
+      <TouchableOpacity
+        style={[styles.button, { backgroundColor: "red" }]}
+        onPress={handleDeleteFreight}
+      >
+        <Text style={styles.buttonText}>Excluir Frete</Text>
       </TouchableOpacity>
     </ScrollView>
   );
