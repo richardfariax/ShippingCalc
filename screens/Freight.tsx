@@ -9,13 +9,17 @@ import {
   Modal,
   View,
 } from "react-native";
-import { updateFreight, deleteFreight } from "../model/freight";
+import {
+  markFreightAsCompleted,
+  markFreightAsOpen,
+  updateFreight,
+  deleteFreight,
+} from "../model/freight";
 import AsyncStorage from "@react-native-async-storage/async-storage";
 import styles from "../style/CreateFreight";
 
 export default function Freight({ route }) {
   const navigation = useNavigation();
-
   const freight = route?.params?.freight;
 
   if (!freight) {
@@ -30,6 +34,7 @@ export default function Freight({ route }) {
   const [cargoType, setCargoType] = useState(freight?.cargoType || "");
   const [openedDate] = useState(freight?.openedDate || "");
   const [createdBy, setCreatedBy] = useState("");
+  const [status, setStatus] = useState(freight.status);
 
   useEffect(() => {
     const getUsername = async () => {
@@ -44,7 +49,7 @@ export default function Freight({ route }) {
     getUsername();
   }, []);
 
-  const showAlert = (title: string, message: string) => {
+  const showAlert = (title, message) => {
     Alert.alert(title, message);
   };
 
@@ -66,10 +71,7 @@ export default function Freight({ route }) {
       const rowsAffected = await updateFreight(updatedFreight);
 
       if (rowsAffected > 0) {
-        console.log("Frete atualizado com sucesso");
         navigation.goBack();
-      } else {
-        console.error("Não foi possível atualizar o frete.");
       }
     } catch (error) {
       console.error("Erro ao salvar o frete:", error);
@@ -88,7 +90,6 @@ export default function Freight({ route }) {
           onPress: async () => {
             try {
               await deleteFreight(freight?.id);
-              console.log("Frete excluído com sucesso.");
               navigation.goBack();
             } catch (error) {
               console.error("Erro ao excluir o frete:", error);
@@ -100,17 +101,23 @@ export default function Freight({ route }) {
     );
   };
 
-  const formatCurrencyOnInput = (value) => {
-    const numericValue = value.replace(/\D/g, "");
-
-    if (!numericValue) return "";
-
-    const floatValue = parseFloat(numericValue) / 100;
-
-    return new Intl.NumberFormat("pt-BR", {
-      style: "currency",
-      currency: "BRL",
-    }).format(floatValue);
+  const handleToggleFreightStatus = async () => {
+    try {
+      if (status === "Aberto") {
+        await markFreightAsCompleted(freight.id);
+        setStatus("Concluído");
+        Alert.alert("Sucesso", "Frete concluído com sucesso.");
+        navigation.goBack();
+      } else {
+        await markFreightAsOpen(freight.id);
+        setStatus("Aberto");
+        Alert.alert("Sucesso", "Frete reaberto com sucesso.");
+        navigation.goBack();
+      }
+    } catch (error) {
+      console.error("Erro ao alternar status do frete:", error);
+      showAlert("Erro", "Não foi possível alterar o status do frete.");
+    }
   };
 
   return (
@@ -124,7 +131,7 @@ export default function Freight({ route }) {
         placeholder="R$ 0,00"
         value={value}
         keyboardType="numeric"
-        onChangeText={(text) => setValue(formatCurrencyOnInput(text))}
+        onChangeText={(text) => setValue(text)}
       />
 
       <Text style={styles.title}>Tipo da Carga:</Text>
@@ -134,14 +141,30 @@ export default function Freight({ route }) {
         value={cargoType}
         onChangeText={(text) => setCargoType(text)}
       />
+
+      <Text style={styles.title}>Status: {status}</Text>
+
       <TouchableOpacity style={styles.button} onPress={handleSaveFreight}>
         <Text style={styles.buttonText}>Salvar Frete</Text>
       </TouchableOpacity>
+
       <TouchableOpacity
         style={[styles.button, { backgroundColor: "red" }]}
         onPress={handleDeleteFreight}
       >
         <Text style={styles.buttonText}>Excluir Frete</Text>
+      </TouchableOpacity>
+
+      <TouchableOpacity
+        style={[
+          styles.button,
+          { backgroundColor: status === "Aberto" ? "green" : "orange" },
+        ]}
+        onPress={handleToggleFreightStatus}
+      >
+        <Text style={styles.buttonText}>
+          {status === "Aberto" ? "Concluir Frete" : "Reabrir Frete"}
+        </Text>
       </TouchableOpacity>
     </ScrollView>
   );
