@@ -28,7 +28,7 @@ export default function App() {
         <StackNavigation.Screen
           name="Freight"
           component={Freight}
-          options={{ animation: "slide_from_bottom" }}
+          options={{ animation: "slide_from_bottom", title: "Frete" }}
         />
         <StackNavigation.Screen
           name="Register"
