@@ -68,7 +68,7 @@ export default function Freights() {
         style={styles.taskItem}
         onPress={() =>
           navigation.navigate("Freight", {
-            task: item,
+            freight: item,
           })
         }
       >
