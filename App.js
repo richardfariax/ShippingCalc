@@ -21,7 +21,7 @@ export default function App() {
           component={Login}
         />
         <StackNavigation.Screen
-          options={{ animation: "slide_from_bottom", title: "Tarefas" }}
+          options={{ animation: "slide_from_bottom", title: "Fretes" }}
           name="Freights"
           component={Freights}
         />

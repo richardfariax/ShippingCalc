@@ -26,14 +26,14 @@ export default function Freights() {
           const tasksFromDB = await getAllFreights(currentUser);
 
           if (!tasksFromDB) {
-            Alert.alert("Erro", "Nenhuma tarefa encontrada.");
+            Alert.alert("Erro", "Nenhum frete encontrada.");
             return;
           }
 
           setTasks(tasksFromDB);
         } catch (error) {
-          console.error("Erro ao carregar as tarefas:", error);
-          Alert.alert("Erro", "Não foi possível carregar as tarefas.");
+          console.error("Erro ao carregar os fretes:", error);
+          Alert.alert("Erro", "Não foi possível carregar os fretes.");
         }
       };
 
@@ -47,7 +47,7 @@ export default function Freights() {
     try {
       navigation.navigate("CreateFreight");
     } catch (error) {
-      console.error("Erro ao navegar para criar tarefa:", error);
+      console.error("Erro ao navegar para criar frete:", error);
       Alert.alert("Erro", "Não foi possível navegar para a criação.");
     }
   };

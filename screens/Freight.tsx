@@ -19,7 +19,7 @@ export default function Freight({ route }) {
   if (!freight) {
     Alert.alert(
       "Erro",
-      "Nenhuma tarefa foi carregada. Volte para a tela anterior."
+      "Nenhum frete foi carregado. Volte para a tela anterior."
     );
     navigation.goBack();
   }
