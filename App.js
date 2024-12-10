@@ -5,7 +5,7 @@ import Login from "./screens/Login";
 import Freights from "./screens/Freights";
 import Freight from "./screens/Freight";
 import Register from "./screens/Register";
-import CreateTask from "./screens/CreateFreight";
+import CreateFreight from "./screens/CreateFreight";
 import { setupDatabase } from "./model/database";
 
 const StackNavigation = createNativeStackNavigator();
@@ -39,7 +39,7 @@ export default function App() {
         />
         <StackNavigation.Screen
           name="CreateFreight"
-          component={CreateTask}
+          component={CreateFreight}
           options={{
             animation: "slide_from_bottom",
             title: "",

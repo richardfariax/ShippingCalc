@@ -43,9 +43,9 @@ export default function Freights() {
     }, [])
   );
 
-  const handleCreateTask = () => {
+  const handleCreateFreight = () => {
     try {
-      navigation.navigate("CreateTask");
+      navigation.navigate("CreateFreight");
     } catch (error) {
       console.error("Erro ao navegar para criar tarefa:", error);
       Alert.alert("Erro", "Não foi possível navegar para a criação.");
@@ -103,7 +103,7 @@ export default function Freights() {
         contentContainerStyle={styles.taskList}
       />
 
-      <TouchableOpacity style={styles.button} onPress={handleCreateTask}>
+      <TouchableOpacity style={styles.button} onPress={handleCreateFreight}>
         <Text style={styles.buttonText}>Novo Frete</Text>
       </TouchableOpacity>
 
